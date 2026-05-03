@@ -4,7 +4,7 @@ const db = require('../db/connection');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const SECRET = 'secreto123';
+const SECRET = process.env.JWT_SECRET;
 
 const autenticar = require('../middlewares/authJWT');
 const { verificarAdmin } = require('../middlewares/auth');
