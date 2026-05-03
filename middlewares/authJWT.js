@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const SECRET = 'secreto123';
+const SECRET = process.env.JWT_SECRET;
 
 function autenticar(req, res, next) {
   const authHeader = req.headers['authorization'];

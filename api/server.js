@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const PORT = process.env.PORT || 3000;
@@ -22,6 +23,6 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log('Server rodando na porta ${PORT}');
+  console.log(`Server rodando na porta ${PORT}`);
 });
 

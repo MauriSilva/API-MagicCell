@@ -1,4 +1,4 @@
-const ADMIN_TOKEN = 'segredo123';
+const ADMIN_TOKEN = process.env.ADMIN_KEY;
 
 function verificarAdmin(req, res, next) {
   const token = req.headers['x-admin-token'];
