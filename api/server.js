@@ -18,8 +18,12 @@ app.use('/pedidos', pedidosRoutes);
 app.use('/produtos', produtosRoutes);
 app.use('/clientes', clientesRoutes);
 
-app.get('/', (req, res) => {
-  res.send('API funcionando 🚀');
+app.get("/", (req, res) => {
+  res.json({
+    api: "MagicCell API",
+    status: "online",
+    version: "1.0"
+  });
 });
 
 app.listen(PORT, () => {
