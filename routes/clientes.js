@@ -152,8 +152,8 @@ router.post('/', async (req, res) => {
     const senha_hash = await bcrypt.hash(senha, 10);
 
     const sql = `
-      INSERT INTO clientes (nome, email, senha_hash, telefone, endereco)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO clientes (nome, email, senha_hash, telefone, endereco, role)
+      VALUES (?, ?, ?, ?, ?,'cliente');
     `;
 
     db.query(
@@ -208,7 +208,9 @@ router.post('/login', (req, res) => {
       }
 
       const token = jwt.sign(
-        { id: cliente.id_cliente },
+        { id: cliente.id_cliente,
+          role: cliente.role
+         },
         SECRET,
         { expiresIn: '1h' }
       );
@@ -219,7 +221,8 @@ router.post('/login', (req, res) => {
         cliente: {
           id: cliente.id_cliente,
           nome: cliente.nome,
-          email: cliente.email
+          email: cliente.email,
+          role: cliente.role
         }
       });
     }
@@ -234,7 +237,7 @@ router.post('/login', (req, res) => {
 // Listar todos os clientes
 router.get('/', verificarAdmin, (req, res) => {
   db.query(
-    'SELECT id_cliente, nome, email, telefone, endereco, criado_em FROM clientes',
+    'SELECT id_cliente, nome, email, telefone, endereco, criado_em, role FROM clientes',
     (err, results) => {
       if (err) {
         return res.status(500).json({ erro: err });
