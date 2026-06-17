@@ -13,6 +13,40 @@ router.get('/', (req, res) => {
   });
 });
 
+//GET produto:id
+router.get('/:id', (req, res) => {
+    const { id } = req.params;
+
+    const sql = `
+        SELECT *
+        FROM produtos
+        WHERE id_produto = ?
+    `;
+
+    db.query(sql, [id], (err, results) => {
+
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: 'Erro ao buscar produto'
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Produto não encontrado'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Produto encontrado',
+            data: results[0]
+        });
+    });
+});
+
 // POST /produtos
 router.post('/', verificarAdmin, (req, res) => {
   const { nome, descricao, preco, estoque, imagem_url, tipo } = req.body;
