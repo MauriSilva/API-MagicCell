@@ -196,6 +196,56 @@ router.get('/admin/todos', autenticar, verificarAdmin, (req, res) => {
   );
 });
 
+//ADMIN - VER DETALHES DOS PEDIDOS
+router.get(
+  '/admin/:id',
+  autenticar,
+  verificarAdmin,
+  (req, res) => {
+
+    const { id } = req.params;
+
+    const sql = `
+      SELECT
+        p.id_pedido,
+        p.total,
+        p.status,
+        p.criado_em,
+        pi.id_produto,
+        pr.nome,
+        pi.quantidade,
+        pi.preco_unitario
+      FROM pedidos p
+      JOIN pedido_itens pi
+        ON p.id_pedido = pi.id_pedido
+      JOIN produtos pr
+        ON pi.id_produto = pr.id_produto
+      WHERE p.id_pedido = ?
+    `;
+
+    db.query(sql, [id], (err, results) => {
+
+      if (err) {
+        return res
+          .status(500)
+          .json({ erro: err });
+      }
+
+      if (results.length === 0) {
+
+        return res
+          .status(404)
+          .json({
+            erro: 'Pedido não encontrado'
+          });
+      }
+
+      res.json(results);
+
+    });
+
+  }
+);
 
 // ADMIN - ATUALIZAR STATUS
 router.put('/admin/:id/status', autenticar, verificarAdmin, (req, res) => {
