@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/connection');
 const autenticar = require('../middlewares/authJWT');
-const { verificarAdmin } = require('../middlewares/auth');
+const verificarAdmin  = require('../middlewares/verificarAdmin');
 
 
 // CRIAR PEDIDO
@@ -182,7 +182,7 @@ router.get('/:id', autenticar, (req, res) => {
 
 
 // ADMIN - LISTAR TODOS OS PEDIDOS
-router.get('/admin/todos', verificarAdmin, (req, res) => {
+router.get('/admin/todos', autenticar, verificarAdmin, (req, res) => {
   db.query(
     `SELECT p.*, c.nome, c.email 
      FROM pedidos p
@@ -198,7 +198,7 @@ router.get('/admin/todos', verificarAdmin, (req, res) => {
 
 
 // ADMIN - ATUALIZAR STATUS
-router.put('/admin/:id/status', verificarAdmin, (req, res) => {
+router.put('/admin/:id/status', autenticar, verificarAdmin, (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 

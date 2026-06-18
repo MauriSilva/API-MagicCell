@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const SECRET = process.env.JWT_SECRET;
 
 const autenticar = require('../middlewares/authJWT');
-const { verificarAdmin } = require('../middlewares/auth');
+const verificarAdmin  = require('../middlewares/verificarAdmin');
 
 
 // =========================
@@ -235,7 +235,7 @@ router.post('/login', (req, res) => {
 // =========================
 
 // Listar todos os clientes
-router.get('/', verificarAdmin, (req, res) => {
+router.get('/', autenticar, verificarAdmin, (req, res) => {
   db.query(
     'SELECT id_cliente, nome, email, telefone, endereco, criado_em, role FROM clientes',
     (err, results) => {
@@ -249,7 +249,7 @@ router.get('/', verificarAdmin, (req, res) => {
 });
 
 // Buscar cliente por ID
-router.get('/:id', verificarAdmin, (req, res) => {
+router.get('/:id', autenticar, verificarAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query(
@@ -270,7 +270,7 @@ router.get('/:id', verificarAdmin, (req, res) => {
 });
 
 // Editar cliente por ID
-router.put('/:id', verificarAdmin, (req, res) => {
+router.put('/:id', autenticar, verificarAdmin, (req, res) => {
   const { id } = req.params;
   const { nome, email, telefone, endereco } = req.body;
 
@@ -298,7 +298,7 @@ router.put('/:id', verificarAdmin, (req, res) => {
 });
 
 // Alterar senha de cliente por ID (admin)
-router.put('/:id/senha', verificarAdmin, async (req, res) => {
+router.put('/:id/senha', autenticar, verificarAdmin, async (req, res) => {
   const { id } = req.params;
   const { novaSenha } = req.body;
 
@@ -330,7 +330,7 @@ router.put('/:id/senha', verificarAdmin, async (req, res) => {
 });
 
 // Deletar cliente por ID
-router.delete('/:id', verificarAdmin, (req, res) => {
+router.delete('/:id', autenticar, verificarAdmin, (req, res) => {
   const { id } = req.params;
 
   db.query(

@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/connection');
-const { verificarAdmin } = require('../middlewares/auth');
+const autenticar = require('../middlewares/authJWT');
+const verificarAdmin = require('../middlewares/verificarAdmin');
 
 // GET /produtos
 router.get('/', (req, res) => {
@@ -48,7 +49,7 @@ router.get('/:id', (req, res) => {
 });
 
 // POST /produtos
-router.post('/', verificarAdmin, (req, res) => {
+router.post('/', autenticar, verificarAdmin, (req, res) => {
   const { nome, descricao, preco, estoque, imagem_url, tipo } = req.body;
 
   // validação básica
@@ -78,7 +79,7 @@ router.post('/', verificarAdmin, (req, res) => {
 });
 
 //PUT /Produtos
-router.put('/:id', verificarAdmin, (req, res) => {
+router.put('/:id', autenticar, verificarAdmin, (req, res) => {
   const { id } = req.params;
   const { nome, descricao, preco, estoque, imagem_url } = req.body;
 
@@ -113,7 +114,7 @@ router.put('/:id', verificarAdmin, (req, res) => {
 });
 
 // DELETE /produtos
-router.delete('/:id', verificarAdmin, (req, res) => {
+router.delete('/:id', autenticar, verificarAdmin, (req, res) => {
   const { id } = req.params;
 
   const sql = 'DELETE FROM produtos WHERE id_produto = ?';
