@@ -5,14 +5,80 @@ const autenticar = require('../middlewares/authJWT');
 const verificarAdmin = require('../middlewares/verificarAdmin');
 
 // GET /produtos
+
+/* GET /produtos?page=1&limit=10 */
 router.get('/', (req, res) => {
-  db.query('SELECT * FROM produtos', (err, results) => {
-    if (err) {
-      return res.status(500).json({ erro: err });
+  let page = Number.parseInt(req.query.page, 10) || 1;
+  let limit = Number.parseInt(req.query.limit, 10) || 10;
+
+  // Validação dos parâmetros
+  if (!Number.isInteger(page) || page < 1) {
+    return res.status(400).json({
+      erro: 'A página deve ser um número inteiro maior que zero.'
+    });
+  }
+
+  if (!Number.isInteger(limit) || limit < 1) {
+    return res.status(400).json({
+      erro: 'O limite deve ser um número inteiro maior que zero.'
+    });
+  }
+
+  // Evita que uma requisição tente carregar produtos demais
+  limit = Math.min(limit, 50);
+
+  const offset = (page - 1) * limit;
+
+  // Primeiro, descobrimos quantos produtos existem
+  db.query(
+    'SELECT COUNT(*) AS total FROM produtos',
+    (err, countResults) => {
+      if (err) {
+        return res.status(500).json({
+          erro: 'Erro ao contar os produtos.'
+        });
+      }
+
+      const totalProdutos = countResults[0].total;
+      const totalPaginas = Math.ceil(totalProdutos / limit);
+
+      // Não permite acessar páginas inexistentes
+      if (totalPaginas > 0 && page > totalPaginas) {
+        return res.status(404).json({
+          erro: 'Página não encontrada.',
+          totalPaginas
+        });
+      }
+
+      // Busca somente os produtos da página solicitada
+      const sql = `
+        SELECT *
+        FROM produtos
+        ORDER BY id_produto DESC
+        LIMIT ? OFFSET ?
+      `;
+
+      db.query(sql, [limit, offset], (err, produtos) => {
+        if (err) {
+          return res.status(500).json({
+            erro: 'Erro ao buscar os produtos.'
+          });
+        }
+
+        return res.json({
+          data: produtos,
+          pagination: {
+            currentPage: page,
+            perPage: limit,
+            totalProducts: totalProdutos,
+            totalPages: totalPaginas
+          }
+        });
+      });
     }
-    res.json(results);
-  });
+  );
 });
+
 
 //GET produto:id
 router.get('/:id', (req, res) => {
