@@ -212,7 +212,7 @@ router.post('/login', (req, res) => {
           role: cliente.role
          },
         SECRET,
-        { expiresIn: '10s' }
+        { expiresIn: '1h' }
       );
 
       res.json({
